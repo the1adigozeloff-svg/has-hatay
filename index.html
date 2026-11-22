@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HAS HATAY — Onlayn Menyu və Sifariş</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-neutral-950 text-white min-h-screen pb-32">
+
+  <!-- Üst Brend Banneri -->
+  <div class="bg-gradient-to-b from-red-600 via-red-700 to-neutral-950 pt-6 pb-8 px-4">
+    <div class="max-w-md mx-auto">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <span class="inline-flex items-center gap-1.5 bg-yellow-400 text-neutral-950 text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full shadow">
+            🛵 Pulsuz Çatdırılma
+          </span>
+          <h1 class="text-3xl font-extrabold text-yellow-300 tracking-tight mt-2 drop-shadow">
+            HAS HATAY
+          </h1>
+          <p class="text-xs text-red-100/90 mt-1 flex items-center gap-1">
+            📍 Məzahir Rüstəmov küç., 32C
+          </p>
+        </div>
+
+        <a href="tel:+994553882232" class="bg-white/15 hover:bg-white/25 backdrop-blur border border-white/20 text-white text-xs font-bold px-3.5 py-2.5 rounded-2xl flex items-center gap-1.5 shrink-0 transition">
+          📞 Zəng et
+        </a>
+      </div>
+
+      <!-- Sosial Linklər -->
+      <div class="flex items-center gap-2 mt-4 flex-wrap">
+        <a href="https://instagram.com/has_hatay__" target="_blank" class="bg-neutral-950/40 hover:bg-neutral-950/60 border border-white/15 text-xs text-red-50 px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition">
+          <span>📸</span> @has_hatay__
+        </a>
+        <a href="https://tiktok.com/@Has_Hatay" target="_blank" class="bg-neutral-950/40 hover:bg-neutral-950/60 border border-white/15 text-xs text-red-50 px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition">
+          <span>🎵</span> @Has_Hatay
+        </a>
+        <span class="bg-neutral-950/40 border border-white/15 text-xs text-yellow-300 font-semibold px-3 py-1.5 rounded-xl">
+          +994 55 388 22 32
+        </span>
+      </div>
+
+      <!-- Axtarış -->
+      <div class="mt-4 relative">
+        <input id="search-input" type="text" oninput="renderMenu()" placeholder="Menyuda axtar (məs: Hatay, Burger, Combo)..." class="w-full bg-neutral-950/85 border border-white/15 rounded-2xl pl-10 pr-4 py-3 text-sm text-white placeholder-neutral-400 focus:outline-none focus:border-yellow-400 transition" />
+        <span class="absolute left-3.5 top-3 text-neutral-400">🔍</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Yapışqan Kateqoriyalar -->
+  <div class="sticky top-0 z-30 bg-neutral-950/95 backdrop-blur border-b border-neutral-800/80 py-3">
+    <div id="categories" class="max-w-md mx-auto px-4 flex gap-2 overflow-x-auto no-scrollbar">
+      <button data-cat="Hamısı" onclick="filterMenu('Hamısı')" class="cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap bg-yellow-400 text-neutral-950">Hamısı</button>
+      <button data-cat="Combolar" onclick="filterMenu('Combolar')" class="cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap bg-neutral-900 text-neutral-300 border border-neutral-800">🔥 Combolar</button>
+      <button data-cat="Dönərlər" onclick="filterMenu('Dönərlər')" class="cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap bg-neutral-900 text-neutral-300 border border-neutral-800">🌯 Dönərlər</button>
+      <button data-cat="Burgerlər" onclick="filterMenu('Burgerlər')" class="cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap bg-neutral-900 text-neutral-300 border border-neutral-800">🍔 Burgerlər</button>
+      <button data-cat="Qəlyanaltılar" onclick="filterMenu('Qəlyanaltılar')" class="cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap bg-neutral-900 text-neutral-300 border border-neutral-800">🍟 Qəlyanaltılar</button>
+      <button data-cat="İçkilər" onclick="filterMenu('İçkilər')" class="cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap bg-neutral-900 text-neutral-300 border border-neutral-800">🥤 İçkilər</button>
+      <button data-cat="Souslar" onclick="filterMenu('Souslar')" class="cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap bg-neutral-900 text-neutral-300 border border-neutral-800">🥫 Souslar</button>
+    </div>
+  </div>
+
+  <!-- Menyu Siyahısı -->
+  <main id="menu-list" class="max-w-md mx-auto px-4 pt-4 space-y-6"></main>
+
+  <!-- Aşağı Səbət Çubuğu -->
+  <div id="cart-bar" class="hidden fixed bottom-4 left-4 right-4 z-40">
+    <div class="max-w-md mx-auto">
+      <button onclick="openCheckout()" class="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 active:scale-[0.99] transition text-white rounded-2xl p-4 shadow-2xl shadow-red-950/80 border border-red-400/30 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span id="cart-badge" class="bg-yellow-400 text-neutral-950 text-xs font-extrabold w-7 h-7 rounded-xl flex items-center justify-center">0</span>
+          <div class="text-left">
+            <p class="text-sm font-extrabold leading-tight">Sifarişi tamamla</p>
+            <p class="text-[11px] text-red-100">Pulsuz çatdırılma • WhatsApp</p>
+          </div>
+        </div>
+        <span id="cart-total" class="text-base font-extrabold text-yellow-300">0.00 AZN</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sifariş Təsdiq Pəncərəsi (Modal) -->
+  <div id="checkout-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end justify-center">
+    <div class="w-full max-w-md bg-neutral-900 border-t border-neutral-800 rounded-t-3xl p-5 max-h-[88vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-extrabold text-white">Səbətiniz</h2>
+        <button onclick="closeCheckout()" class="w-8 h-8 rounded-full bg-neutral-800 text-neutral-300 font-bold">✕</button>
+      </div>
+
+      <!-- Seçilmiş məhsullar -->
+      <div id="checkout-items" class="space-y-2.5 mb-5"></div>
+
+      <!-- Çatdırılma növü -->
+      <div class="grid grid-cols-2 gap-2 mb-4">
+        <button id="btn-delivery" onclick="setOrderType('Çatdırılma')" class="py-2.5 rounded-xl text-xs font-bold bg-yellow-400 text-neutral-950 border border-yellow-400">
+          🛵 Pulsuz Çatdırılma
+        </button>
+        <button id="btn-pickup" onclick="setOrderType('Özüm götürəcəm')" class="py-2.5 rounded-xl text-xs font-bold bg-neutral-950 text-neutral-300 border border-neutral-800">
+          🏃 Özüm götürəcəm
+        </button>
+      </div>
+
+      <!-- Ünvan və Qeyd -->
+      <div class="space-y-2.5 mb-5">
+        <input id="address-input" type="text" placeholder="Çatdırılma ünvanı (məs: bina, blok, mənzil)" class="w-full bg-neutral-950 border border-neutral-700 rounded-xl px-3.5 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-yellow-400" />
+        <input id="note-input" type="text" placeholder="Əlavə qeyd (məs: soğansız, acılı və s.)" class="w-full bg-neutral-950 border border-neutral-700 rounded-xl px-3.5 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-yellow-400" />
+      </div>
+
+      <!-- Yekun və WhatsApp Düyməsi -->
+      <div class="border-t border-neutral-800 pt-4">
+        <div class="flex items-center justify-between mb-1 text-xs text-neutral-400">
+          <span>Çatdırılma</span>
+          <span class="text-emerald-400 font-bold">Pulsuz</span>
+        </div>
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-sm font-bold text-neutral-300">Cəmi məbləğ</span>
+          <span id="modal-total" class="text-xl font-extrabold text-yellow-400">0.00 AZN</span>
+        </div>
+        <button onclick="sendWhatsApp()" class="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] transition text-neutral-950 font-extrabold py-3.5 rounded-2xl text-sm flex items-center justify-center gap-2">
+          💬 WhatsApp-la Sifariş Göndər
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // HAS HATAY WhatsApp nömrəsi (+994 55 388 22 32)
+    const WHATSAPP_NUMBER = "994553882232";
+
+    const menuItems = [
+      // COMBOLAR
+      { id: 101, name: "COMBO 1", desc: "2 Hatay dürüm, 2 Şaurma çörək, 4 Ayran", price: 15.80, cat: "Combolar", badge: "SƏRFƏLİ", icon: "🔥", img: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=300&h=300&fit=crop" },
+      { id: 102, name: "COMBO 2", desc: "4 Basdırma, 1 lt Cola", price: 14.00, cat: "Combolar", icon: "🔥", img: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=300&h=300&fit=crop" },
+      { id: 103, name: "COMBO 3", desc: "4 Hatay, 1 lt Cola", price: 15.50, cat: "Combolar", icon: "🔥", img: "https://images.unsplash.com/photo-1633321702518-7feccafb94d5?w=300&h=300&fit=crop" },
+      { id: 104, name: "COMBO 4 (2 nəfərlik burger seti)", desc: "2 burger, 2 pors fri, 2 ədəd 0.33 Cola", price: 13.90, cat: "Combolar", badge: "2 NƏFƏRLİK", icon: "🍔", img: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=300&h=300&fit=crop" },
+      { id: 105, name: "COMBO 5 (4 nəfərlik burger seti)", desc: "4 burger, 2 pors fri, 2 nuggets, 1 lt Cola", price: 28.00, cat: "Combolar", badge: "4 NƏFƏRLİK", icon: "🍔", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=300&h=300&fit=crop" },
+      { id: 106, name: "COMBO 6 (Hatay seti 4 nəfərlik)", desc: "4 Hatay, 4 Ayran, 2 pors fri", price: 22.90, cat: "Combolar", badge: "4 NƏFƏRLİK", icon: "🌯", img: "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=300&h=300&fit=crop" },
+
+      // DÖNƏRLƏR
+      { id: 1, name: "Hatay dönər", desc: "Xüsusi Hatay sousu ilə klassik ləzzət", price: 3.90, cat: "Dönərlər", badge: "HİT", icon: "🌯", img: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=300&h=300&fit=crop" },
+      { id: 2, name: "Hatay meqa", desc: "Böyük porsiya Hatay dönəri", price: 7.20, cat: "Dönərlər", icon: "🌯", img: "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=300&h=300&fit=crop" },
+      { id: 3, name: "Basdırma çörəkdə", desc: "Xırtıldayan çörəkdə basdırma dönər", price: 3.50, cat: "Dönərlər", icon: "🥖", img: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=300&h=300&fit=crop" },
+      { id: 4, name: "Basdırma lavaş", desc: "İncə lavaşda basdırma dönər", price: 4.00, cat: "Dönərlər", icon: "🌯", img: "https://images.unsplash.com/photo-1633321702518-7feccafb94d5?w=300&h=300&fit=crop" },
+      { id: 5, name: "Tonbik dönər pendirli", desc: "Əridilmiş pendirli tonbik çörəkdə dönər", price: 4.00, cat: "Dönərlər", icon: "🧀", img: "https://images.unsplash.com/photo-1551782450-17144efb9c50?w=300&h=300&fit=crop" },
+      { id: 6, name: "Şaurma lavaş", desc: "Xüsusi şaurma sousu ilə lavaşda", price: 4.00, cat: "Dönərlər", icon: "🌯", img: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=300&h=300&fit=crop" },
+      { id: 7, name: "Şaurma çörək", desc: "Xüsusi şaurma sousu ilə çörəkdə", price: 3.50, cat: "Dönərlər", icon: "🥖", img: "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=300&h=300&fit=crop" },
+      { id: 8, name: "Porsion dönər", desc: "Qarnir və souslarla doyurucu porsiya", price: 7.50, cat: "Dönərlər", icon: "🍽️", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=300&fit=crop" },
+      { id: 9, name: "Has boks", desc: "Kartof fri, dönər əti və xüsusi souslar bir qutuda", price: 8.00, cat: "Dönərlər", badge: "ÖZƏL", icon: "📦", img: "https://images.unsplash.com/photo-1585238342024-78d387f4a707?w=300&h=300&fit=crop" },
+      { id: 10, name: "Burito + sos + içəcək", desc: "Yeni burito seti: sos və içəcək daxil", price: 9.90, cat: "Dönərlər", badge: "YENİ", icon: "🌮", img: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=300&h=300&fit=crop" },
+
+      // BURGERLƏR
+      { id: 21, name: "Toyuq burger", desc: "Xırtıldayan toyuq filesi, təzə tərəvəz və sous", price: 4.50, cat: "Burgerlər", icon: "🍔", img: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=300&h=300&fit=crop" },
+      { id: 22, name: "Ət burger", desc: "Şirəli mal əti kotleti, çedar pendiri və sous", price: 5.50, cat: "Burgerlər", badge: "HİT", icon: "🍔", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop" },
+      { id: 23, name: "Sezar burger", desc: "Xüsusi Sezar sousu, kahı və toyuq filesi", price: 5.00, cat: "Burgerlər", icon: "🍔", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=300&h=300&fit=crop" },
+
+      // QƏLYANALTILAR
+      { id: 31, name: "Nuggets", desc: "Qızardılmış xırtıldayan toyuq naqqetsləri", price: 4.00, cat: "Qəlyanaltılar", icon: "🍗", img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=300&h=300&fit=crop" },
+      { id: 32, name: "Kartof fri", desc: "İsti və xırtıldayan qızardılmış kartof", price: 3.00, cat: "Qəlyanaltılar", icon: "🍟", img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=300&h=300&fit=crop" },
+
+      // İÇKİLƏR
+      { id: 41, name: "Ayran", desc: "Soyuq ənənəvi ayran", price: 1.00, cat: "İçkilər", icon: "🥛" },
+      { id: 42, name: "Cola 0.33 lt", desc: "Soyuq banka Coca-Cola", price: 1.00, cat: "İçkilər", icon: "🥤" },
+      { id: 43, name: "Cola 0.5 lt", desc: "Soyuq 0.5 lt Coca-Cola", price: 1.50, cat: "İçkilər", icon: "🥤" },
+      { id: 44, name: "Fanta 0.33 lt", desc: "Soyuq banka Fanta", price: 1.00, cat: "İçkilər", icon: "🍊" },
+      { id: 45, name: "Fanta 0.5 lt", desc: "Soyuq 0.5 lt Fanta", price: 1.50, cat: "İçkilər", icon: "🍊" },
+      { id: 46, name: "Sprite 0.33 lt", desc: "Soyuq banka Sprite", price: 1.00, cat: "İçkilər", icon: "🍋" },
+      { id: 47, name: "Sprite 0.5 lt", desc: "Soyuq 0.5 lt Sprite", price: 1.50, cat: "İçkilər", icon: "🍋" },
+      { id: 48, name: "Cola 1 lt", desc: "Böyük 1 litrlik Coca-Cola", price: 2.00, cat: "İçkilər", icon: "🍾" },
+      { id: 49, name: "Su qazlı", desc: "Soyuq qazlı su", price: 1.00, cat: "İçkilər", icon: "💧" },
+      { id: 50, name: "Su qazsız", desc: "Soyuq qazsız su", price: 1.00, cat: "İçkilər", icon: "💧" },
+
+      // SOUSLAR
+      { id: 61, name: "Ketçup", desc: "Klassik tomat ketçupu", price: 0.50, cat: "Souslar", icon: "🍅" },
+      { id: 62, name: "Mayonez", desc: "Kremli mayonez sousu", price: 0.50, cat: "Souslar", icon: "🥣" },
+      { id: 63, name: "Şaurma sousu", desc: "Xüsusi sarımsaqlı şaurma sousu", price: 0.70, cat: "Souslar", icon: "🧄" },
+      { id: 64, name: "Barbekü", desc: "Tüstülü barbekü sousu", price: 0.70, cat: "Souslar", icon: "🔥" }
+    ];
+
+    const categoryOrder = ["Combolar", "Dönərlər", "Burgerlər", "Qəlyanaltılar", "İçkilər", "Souslar"];
+    let cart = {};
+    let currentCategory = "Hamısı";
+    let orderType = "Çatdırılma";
+
+    function renderMenu() {
+      const container = document.getElementById("menu-list");
+      const query = document.getElementById("search-input").value.trim().toLowerCase();
+
+      const filtered = menuItems.filter(item => {
+        const matchCat = currentCategory === "Hamısı" || item.cat === currentCategory;
+        const matchSearch = !query || item.name.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query);
+        return matchCat && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="text-center text-neutral-500 py-10 text-sm">Axtarışa uyğun məhsul tapılmadı.</p>`;
+        return;
+      }
+
+      const catsToShow = currentCategory === "Hamısı"
+        ? categoryOrder.filter(c => filtered.some(i => i.cat === c))
+        : [currentCategory];
+
+      container.innerHTML = catsToShow.map(cat => {
+        const items = filtered.filter(i => i.cat === cat);
+        return `
+          <section>
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-base font-extrabold text-yellow-400 tracking-wide uppercase">${cat}</h2>
+              <span class="text-xs text-neutral-500">${items.length} çeşid</span>
+            </div>
+            <div class="space-y-3">
+              ${items.map(item => renderCard(item)).join("")}
+            </div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function renderCard(item) {
+      const qty = cart[item.id] || 0;
+      const thumb = item.img
+        ? `<img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div style="display:none" class="w-full h-full items-center justify-center text-2xl">${item.icon}</div>`
+        : `<div class="w-full h-full flex items-center justify-center text-2xl">${item.icon}</div>`;
+
+      return `
+        <div class="bg-neutral-900/90 border ${qty > 0 ? 'border-yellow-400/60' : 'border-neutral-800/90'} rounded-2xl p-3 flex items-center gap-3 transition">
+          <div class="w-16 h-16 rounded-xl bg-neutral-800 overflow-hidden shrink-0">
+            ${thumb}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <h3 class="font-bold text-white text-sm leading-snug">${item.name}</h3>
+              ${item.badge ? `<span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-red-600 text-yellow-300">${item.badge}</span>` : ""}
+            </div>
+            <p class="text-xs text-neutral-400 mt-0.5 leading-snug">${item.desc}</p>
+            <p class="text-yellow-400 font-extrabold text-sm mt-1.5">${item.price.toFixed(2)} AZN</p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            ${qty > 0 ? `
+              <button onclick="updateQty(${item.id}, -1)" class="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white font-bold">−</button>
+              <span class="w-5 text-center text-sm font-extrabold">${qty}</span>
+            ` : ""}
+            <button onclick="updateQty(${item.id}, 1)" class="w-8 h-8 rounded-full bg-yellow-400 hover:bg-yellow-300 text-neutral-950 font-extrabold text-lg leading-none">+</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function filterMenu(category) {
+      currentCategory = category;
+      document.querySelectorAll(".cat-btn").forEach(btn => {
+        const isActive = btn.dataset.cat === category;
+        btn.className = isActive
+          ? "cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap bg-yellow-400 text-neutral-950"
+          : "cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap bg-neutral-900 text-neutral-300 border border-neutral-800";
+      });
+      renderMenu();
+    }
+
+    function updateQty(id, change) {
+      cart[id] = (cart[id] || 0) + change;
+      if (cart[id] <= 0) delete cart[id];
+      renderMenu();
+      updateCartUI();
+      if (!document.getElementById("checkout-modal").classList.contains("hidden")) {
+        if (Object.keys(cart).length === 0) closeCheckout();
+        else renderCheckoutItems();
+      }
+    }
+
+    function getCartTotals() {
+      let totalQty = 0;
+      let totalPrice = 0;
+      for (const [id, qty] of Object.entries(cart)) {
+        const item = menuItems.find(m => m.id == id);
+        if (item) {
+          totalQty += qty;
+          totalPrice += item.price * qty;
+        }
+      }
+      return { totalQty, totalPrice };
+    }
+
+    function updateCartUI() {
+      const bar = document.getElementById("cart-bar");
+      const { totalQty, totalPrice } = getCartTotals();
+
+      if (totalQty > 0) {
+        bar.classList.remove("hidden");
+        document.getElementById("cart-badge").textContent = totalQty;
+        document.getElementById("cart-total").textContent = `${totalPrice.toFixed(2)} AZN`;
+        document.getElementById("modal-total").textContent = `${totalPrice.toFixed(2)} AZN`;
+      } else {
+        bar.classList.add("hidden");
+      }
+    }
+
+    function openCheckout() {
+      renderCheckoutItems();
+      document.getElementById("checkout-modal").classList.remove("hidden");
+    }
+
+    function closeCheckout() {
+      document.getElementById("checkout-modal").classList.add("hidden");
+    }
+
+    function setOrderType(type) {
+      orderType = type;
+      const isDel = type === "Çatdırılma";
+      document.getElementById("btn-delivery").className = isDel
+        ? "py-2.5 rounded-xl text-xs font-bold bg-yellow-400 text-neutral-950 border border-yellow-400"
+        : "py-2.5 rounded-xl text-xs font-bold bg-neutral-950 text-neutral-300 border border-neutral-800";
+      document.getElementById("btn-pickup").className = !isDel
+        ? "py-2.5 rounded-xl text-xs font-bold bg-yellow-400 text-neutral-950 border border-yellow-400"
+        : "py-2.5 rounded-xl text-xs font-bold bg-neutral-950 text-neutral-300 border border-neutral-800";
+      document.getElementById("address-input").style.display = isDel ? "block" : "none";
+    }
+
+    function renderCheckoutItems() {
+      const container = document.getElementById("checkout-items");
+      container.innerHTML = Object.entries(cart).map(([id, qty]) => {
+        const item = menuItems.find(m => m.id == id);
+        return `
+          <div class="flex items-center justify-between gap-2 bg-neutral-950 border border-neutral-800 rounded-xl p-3">
+            <div class="min-w-0">
+              <p class="text-sm font-bold text-white truncate">${item.name}</p>
+              <p class="text-xs text-yellow-400 font-semibold">${(item.price * qty).toFixed(2)} AZN</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button onclick="updateQty(${item.id}, -1)" class="w-7 h-7 rounded-full bg-neutral-800 text-white font-bold">−</button>
+              <span class="w-4 text-center text-xs font-bold">${qty}</span>
+              <button onclick="updateQty(${item.id}, 1)" class="w-7 h-7 rounded-full bg-yellow-400 text-neutral-950 font-bold">+</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+      updateCartUI();
+    }
+
+    function sendWhatsApp() {
+      const address = document.getElementById("address-input").value.trim();
+      const note = document.getElementById("note-input").value.trim();
+      let lines = ["Salam! HAS HATAY onlayn menyusundan sifariş etmək istəyirəm:", ""];
+      let total = 0;
+
+      for (const [id, qty] of Object.entries(cart)) {
+        const item = menuItems.find(m => m.id == id);
+        const subtotal = item.price * qty;
+        total += subtotal;
+        lines.push(`• ${qty}x ${item.name} — ${subtotal.toFixed(2)} AZN`);
+      }
+
+      lines.push("", `💰 Cəmi: ${total.toFixed(2)} AZN`);
+      lines.push(`📦 Növ: ${orderType === "Çatdırılma" ? "Pulsuz çatdırılma" : "Özüm götürəcəm"}`);
+      if (orderType === "Çatdırılma" && address) lines.push(`📍 Ünvan: ${address}`);
+      if (note) lines.push(`📝 Qeyd: ${note}`);
+
+      const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
+      window.open(url, "_blank");
+    }
+
+    renderMenu();
+  </script>
+</body>
+</html>
